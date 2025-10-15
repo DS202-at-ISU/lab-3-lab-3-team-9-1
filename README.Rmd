@@ -78,7 +78,7 @@ Similarly, deal with the returns of characters.
 Based on these datasets calculate the average number of deaths an Avenger suffers. 
 
 ## Individually
-#Kenzie's Work
+## Kenzie's Work
 For each team member, copy this part of the report. 
 
 Each team member picks one of the statements in the FiveThirtyEight [analysis](https://fivethirtyeight.com/features/avengers-death-comics-age-of-ultron/) and fact checks it based on the data. Use dplyr functionality whenever possible.
