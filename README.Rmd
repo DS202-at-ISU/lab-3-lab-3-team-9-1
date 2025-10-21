@@ -201,3 +201,66 @@ list(
 ```
 Include at least one sentence discussing the result of your fact-checking endeavor.
 “Using the dataset, I count total_deaths total death events and total_returns total return events; this supports FiveThirtyEight’s claim of about 89 deaths and 57 returns."
+
+## Arina's Work
+For each team member, copy this part of the report. 
+
+Each team member picks one of the statements in the FiveThirtyEight [analysis](https://fivethirtyeight.com/features/avengers-death-comics-age-of-ultron/) and fact checks it based on the data. Use dplyr functionality whenever possible.
+
+### FiveThirtyEight Statement
+
+> Quote the statement you are planning to fact-check.
+"Out of 173 listed Avengers, my analysis found that 69 had died at least one time after they joined the team.5 That’s about 40 percent of all people who have ever signed on to the team."
+### Include the code
+
+Make sure to include the code to derive the (numeric) fact for the statement
+
+```{r}
+# Arina's analysis — fact-check the "69 out of 173 (~40%)" claim
+
+library(dplyr)
+library(tidyr)
+library(readr)
+
+# Load the Avengers dataset
+
+av <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/avengers/avengers.csv", stringsAsFactors = FALSE)
+
+
+
+# Long-format table for Death[1-5]
+
+deaths <- av %>%
+select(URL, Name.Alias, starts_with("Death")) %>%
+pivot_longer(
+cols = starts_with("Death"),
+names_to = "Time",
+values_to = "Death"
+) %>%
+mutate(
+Time  = parse_number(Time),
+Death = tolower(Death)
+) %>%
+filter(Death != "")   # remove blanks
+
+# Count unique Avengers and who has died at least once
+
+counts_tbl <- deaths %>%
+group_by(URL, Name.Alias) %>%
+summarise(died_ever = any(Death == "yes"), .groups = "drop")
+
+total_avengers <- n_distinct(av$URL)               # should be 173 in this dataset
+died_at_least_once <- sum(counts_tbl$died_ever)    # claimed to be 69
+prop_died <- died_at_least_once / total_avengers
+
+list(
+total_avengers = total_avengers,
+died_at_least_once = died_at_least_once,
+prop_died = round(prop_died, 3)
+)
+
+```
+
+The dataset shows 173 Avengers, 69 of whom have died at least once — about 39.9%.
+This perfectly matches the FiveThirtyEight claim that about 40% of Avengers have died at least once after joining the team.
+
