@@ -78,6 +78,7 @@ Similarly, deal with the returns of characters.
 Based on these datasets calculate the average number of deaths an Avenger suffers. 
 
 ## Individually
+
 ## Kenzie's Work
 For each team member, copy this part of the report. 
 
@@ -145,6 +146,58 @@ num_revived
 ```
 ### Include your answer
 
+## Dan's Work
+For each team member, copy this part of the report. 
+
+Each team member picks one of the statements in the FiveThirtyEight [analysis](https://fivethirtyeight.com/features/avengers-death-comics-age-of-ultron/) and fact checks it based on the data. Use dplyr functionality whenever possible.
+
+### FiveThirtyEight Statement
+
+> Quote the statement you are planning to fact-check.
+"I counted 89 total deaths — some unlucky Avengers7 are basically Meat Loaf with an E-ZPass — and on 57 occasions the individual made a comeback."
+### Include the code
+
+Make sure to include the code to derive the (numeric) fact for the statement
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(readr)
+
+# Load data
+av <- read.csv(
+  "https://raw.githubusercontent.com/fivethirtyeight/data/master/avengers/avengers.csv",
+  stringsAsFactors = FALSE
+)
+
+# Long tables for deaths and returns
+deaths <- av %>%
+  select(URL, starts_with("Death")) %>%
+  pivot_longer(
+    cols = starts_with("Death"),
+    names_to = "Time",
+    values_to = "Death"
+  ) %>%
+  mutate(Death = tolower(Death))
+
+returns <- av %>%
+  select(URL, starts_with("Return")) %>%
+  pivot_longer(
+    cols = starts_with("Return"),
+    names_to = "Time",
+    values_to = "Return"
+  ) %>%
+  mutate(Return = tolower(Return))
+
+# Totals across all events
+total_deaths  <- sum(deaths$Death  == "yes", na.rm = TRUE)
+total_returns <- sum(returns$Return == "yes", na.rm = TRUE)
+
+list(
+  total_deaths  = total_deaths,
+  total_returns = total_returns
+)
+
+```
 Include at least one sentence discussing the result of your fact-checking endeavor.
-"Based on the dataset, three of the four heroes involved in the storyline are reported as dying and then returning. This shows that they are not dead, but continuing their adventures on the counter-earth. Those three Avengers are Thor, Captain America, and Iron Man.
-Upload your changes to the repository. Discuss and refine answers as a team.
+“Using the dataset, I count total_deaths total death events and total_returns total return events; this supports FiveThirtyEight’s claim of about 89 deaths and 57 returns."
